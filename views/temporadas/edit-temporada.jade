@@ -1,0 +1,50 @@
+extends ../layout
+
+block content
+    section.container
+        include ../header
+        div.item 
+            form.form(method="POST", id="formulario", action="/temporadas/actualizar")
+                fieldset
+                    div.container.p1
+                        input#id(type="hidden", name="id", value="#{data[0].Id}")
+                        label.item.i-b.v-top.ph3.right(for="Inicia") Inicio de Temporada:
+                        input.item.i-b.v-top.ph4#Inicia(type="number", name="Inicia", min="1901", max="2155", placeholder="YYYY", value="#{data[0].Inicia}" , onchange="actualizar(this)" required)
+                        input#save(type="hidden", name="save", value="edit")
+                        label.item.i-b.v-top.ph1.center -
+                        input.item.i-b.v-top.ph4#Finaliza(type="number", name="Finaliza", value="#{data[0].Finaliza}" , placeholder="YYYY", readonly, required)
+                    div.container.p1
+                        button.item.ph4.mauto.button.add(onclick="validar(this)") Actualizar
+                        input(type="hidden", name="_method", value="PUT")
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.2.4/jquery.min.js"></script>
+        script.
+            function actualizar(input){
+                let inicia = parseInt( $(input).val() ) + 1
+                $('#Finaliza').val(inicia)
+                document.getElementById('Inicia').setCustomValidity("")
+            }
+             function validar(input){
+                let inicia = $('#Inicia').val(),
+                    id = $('#id').val()
+
+                if(inicia != ''){
+                    //- $(input).attr('disabled', true)
+                    document.getElementById('Inicia').setCustomValidity("Esta fecha ya existe")
+                    $.post('/temporadas/validar', { Id : id, Inicia : inicia }, function(data){
+                        if(data.ok){
+                            //- $(input).attr('disabled', false)
+                            document.getElementById('Inicia').setCustomValidity("")
+                            document.getElementById('formulario').submit()
+                        }
+                        else{
+                            //- $(input).attr('disabled', false)
+                            document.getElementById('Inicia').focus()
+                            //- document.getElementById('formulario').submit()
+                        }
+                    })
+                }
+                else{
+                    //- alert('complete los campos')
+                    document.getElementById('Inicia').focus()
+                }
+            }

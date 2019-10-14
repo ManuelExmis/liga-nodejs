@@ -1,0 +1,52 @@
+extends ../layout
+
+block content
+    section.container
+        include ../header
+        article.item
+            -if(data.length)
+                table.table
+                    tr
+                        th Temporada
+                        th(colspan="2")
+                            form(method="get" action="/temporadas/agregar")
+                                input.button.add(type="submit", value="Agregar")
+                    each temp in data
+                        tr
+                            td.center #{temp.Inicia} - #{temp.Finaliza}
+                            td.center 
+                                form(method="POST" action="/temporadas/editar")
+                                    input(type="hidden", name="id", value="#{temp.Id}")
+                                    input.button.edit(type="submit", value="Editar")
+                            td.center 
+                                form(method="POST" action="/temporadas/eliminar")
+                                    input.button.delete(type="button", id="#{temp.Id}" value="Eliminar" onclick="eliminar(this)")
+                                    input(type="hidden", name="id", value="#{temp.Id}")
+                                    input(type="hidden", name="_method", value="DELETE")
+                <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.2.4/jquery.min.js"></script>
+                script.
+                    function eliminar(input){
+                        var deleteOk = confirm('¿Estás seguro de eliminar la temporada?'),
+                            id = $(input).attr('id')
+                            $(input).attr('disabled', true)
+                            console.log(id)
+                        //- return (deleteOk) ? input.parentNode.submit() : false
+                        if(deleteOk)
+                        {
+                            $.post('/temporadas/puedoEliminar', { id : id}, function(data){
+                                if(data.ok){
+                                    input.parentNode.submit()
+                                }
+                                else{
+                                    alert('No se puede eliminar la temporada porque tiene registros vinculados')
+                                }
+                                $(input).attr('disabled', false)
+                            })
+                        }
+                        $(input).attr('disabled', false)
+                    }
+            -else
+                div 
+                    form(method="get" action="/temporadas/agregar")
+                        input.button.add(type="submit", value="Agregar")
+                p.error No existen Temporadas en la Base de Datos

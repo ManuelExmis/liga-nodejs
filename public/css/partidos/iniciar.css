@@ -1,0 +1,17 @@
+@media (min-width: 768px){
+    .teams-players,.players-selected,.local-tit-players,.local-ben-players,.visit-tit-players,.visit-ben-players {
+        width: 50%;
+    }
+    .teams-players,.local-tit-players,.visit-tit-players{
+        float: left;
+    }
+    .players-selected,.local-ben-players,.visit-ben-players{
+        float: right;
+    }
+}
+.hide{
+    display: none;
+}
+.tachado{
+    text-decoration: line-through;
+}

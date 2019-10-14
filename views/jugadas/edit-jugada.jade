@@ -1,0 +1,47 @@
+extends ../layout
+
+block content
+    section.container
+        include ../header
+        div.item 
+            form.form(method="post" id="formulario" action="/jugadas/actualizar")
+                fieldset
+                    div.container.p1
+                        label.item.i-b.v-top.ph3.p_25.right(for="Jugada") Jugada:
+                        input.item.i-b.v-top.ph9.p_25#jugada(type="text", name="Jugada", maxlength="50", value="#{data[0].Jugada}", onkeyup="quitMessage(this)" , required)
+                        input#id(type="hidden", name="id", value="#{data[0].Id}")
+                        input#save(type="hidden", name="save", value="edit")
+                    div.container.p1
+                        label.item.i-b.v-top.ph3.p_25.right(for="Descripcion") Descripción:
+                        input.item.i-b.v-top.ph9.p_25#descripcion(type="text", name="Descripcion", maxlength="255", value="#{data[0].Descripcion}" , required)
+                    div.container.p1
+                        button.item.ph4.mauto.button.add(onclick="validar(this)") Actualizar
+                        input(type="hidden", name="_method", value="PUT")
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.2.4/jquery.min.js"></script>
+        script.
+            function quitMessage(input){
+                document.getElementById('jugada').setCustomValidity("")
+            }
+            function validar(input){
+                let jugada = document.getElementById('jugada'),
+                    descripcion = document.getElementById('descripcion'),
+                    id = document.getElementById('id').value
+                if(!jugada.validity.valid){
+                    jugada.focus()
+                }
+                else if(!descripcion.validity.valid){
+                    descripcion.focus()
+                }
+                else{
+                    jugada.setCustomValidity("Esta jugada ya existe!")
+                    $.post('/jugadas/validar', { Id : id, Jugada : jugada.value }, function(data){
+                        if(data.ok){
+                            jugada.setCustomValidity("")
+                            document.getElementById('formulario').submit()
+                        }
+                        else{
+                            jugada.focus()
+                        }
+                    })
+                }
+            }

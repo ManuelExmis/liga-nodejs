@@ -1,0 +1,17 @@
+doctype html
+html(lang="es")
+  head
+    meta(charset="utf-8")
+    meta(name="viewport", content="width=device-width,initial-scale=1")
+    title=title
+    link(rel="stylesheet", href="/css/bootstrap.min.css")
+    link(rel="stylesheet", href="#{pathcss}")
+  body
+    block content
+
+
+    script(src="/socket.io/socket.io.js")
+    script(src="/js/jquery.min.js")
+    script(src="/js/popper.js")
+    script(src="/js/bootstrap.min.js")
+    script(src="#{pathjs}")

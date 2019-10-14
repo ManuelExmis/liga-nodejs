@@ -1,0 +1,76 @@
+extends ../layout
+
+block content
+    section.container
+        include ../header
+        article.item
+            -function fecha(datestring){
+                -var date = new Date(datestring);
+                -var dia = date.getDate();
+                -var mes = date.getMonth();
+                -var anyo = date.getFullYear();
+
+                -return dia+'/'+mes+'/'+anyo;
+            -}
+            -if(data.length)
+                table.table
+                    tr
+                        th Nombre completo
+                        th Fecha de Nacimiento
+                        th Sexo
+                        th Alias
+                        th Equipo
+                        th Temporada
+                        th Contrato
+                        th(colspan="2")
+                            form(method="get" action="/jugadores/agregar")
+                                input.button.add(type="submit", value="Agregar")
+                    each jugador in data
+                        tr(idEquipo="#{jugador.IdEquipo}", idTemporada="#{jugador.IdTemporada}")
+                            td #{jugador.Nombre} #{jugador.Apellido}
+                            td #{fecha(jugador.FNacimiento)}
+                            -if(jugador.Sexo == 0)
+                                td Femenino
+                            -else
+                                td Masculino
+                            td #{jugador.NombreFut}
+                            td #{jugador.Equipo}
+                            td #{jugador.Inicia} - #{jugador.Finaliza}
+                            td #{jugador.Tiempo} años
+                            td 
+                                form(method="POST" action="/jugadores/editar")
+                                    input(type="hidden", name="id", value="#{jugador.Id}")
+                                    input(type="hidden", name="idTemporada", value="#{jugador.IdTemporada}")
+                                    input(type="hidden", name="idEquipo", value="#{jugador.IdEquipo}")
+                                    input.button.edit(type="submit", value="Editar")
+                            td 
+                                form(method="POST" action="/jugadores/eliminar")
+                                    input.button.delete(type="button", id="#{jugador.Id}" value="Eliminar" onclick="eliminar(this)")
+                                    input(type="hidden", name="id", value="#{jugador.Id}")
+                                    input(type="hidden", name="_method", value="DELETE")
+                <script src="/js/jquery-1.10.2.min.js"></script>
+                script.
+                    function eliminar(input){
+                            var deleteOk = confirm('¿Estás seguro de eliminar el jugador?'),
+                                id = $(input).attr('id')
+                                $(input).attr('disabled', true)
+                                console.log(id)
+                            if(deleteOk)
+                            {
+                                $.post('/jugadores/puedoEliminar', { id : id}, function(data){
+                                    if(data.ok){
+                                        input.parentNode.submit()
+                                    }
+                                    else{
+                                        alert('No se puede eliminar el jugador porque tiene registros vinculados')
+                                    }
+                                    $(input).attr('disabled', false)
+                                })
+                            }
+                            $(input).attr('disabled', false)
+                        }
+            -else
+                div
+                    form(method="get" action="/jugadores/agregar")
+                        input.button.add(type="submit", value="Agregar")
+                p.error No existen Jugadores en la Base de Datos

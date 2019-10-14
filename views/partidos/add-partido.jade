@@ -1,0 +1,201 @@
+extends ../layout
+
+block content
+    section.container
+        include ../header
+        div.container.fixed-top
+            div.row
+                div.col-xl-8
+                div#alertMessage.col-xl-4.hide
+                    div.alert.alert-warning
+                        button#closeAlert(type="button", class="close")
+                            span &times;
+                        strong Message
+        div.modal.fade#modalCambios(tabindex="-1" role="dialog" aria-labelledby="modalLabel" aria-hidden="true")
+            div.modal-dialog(role="document")
+                div.modal-content
+                    div.modal-header
+                        h5.modal-title#modalLabel Cambiar Jugador
+                        button.close(type="button" data-dismiss="modal" aria-label="Close")
+                            span(aria-hidden="true") &times;
+                    div.modal-body
+                        p Aquí van los jugadores en el campo
+                    div.modal-footer
+                        button.btn.btn-secondary(type="button" data-dismiss="modal") Cancelar
+                        button.btn.btn-primary#btnOkCambiar(type="button") Ok
+        div.container
+            div.row
+                div.col-sm-12
+                    p.text-center(idPartido="#{data.partido[0].Id}")
+                        span.h2.center(id="#{data.equipoL[0].Id}") #{data.equipoL[0].Nombre}
+                        span.h3.center(id="resultado")  vs 
+                        span.h2.center(id="#{data.equipoV[0].Id}") #{data.equipoV[0].Nombre} 
+        div#jugadas.container(class="#{(data.continuar) ? '' : 'hide'}")
+            div.row
+                div.col-xl-6
+                    h5 tarjetas amarillas
+                    ul.ta-local
+                        if data.continuar
+                            each jugador in data.amarillasLocal
+                                li(idJ="#{jugador.jugador}") #{jugador.nombre} #{jugador.apellido}
+                                    span.ml-2 #{jugador.minuto}'
+                    h4 tarjetas rojas
+                    ul.tr-local
+                        if data.continuar
+                            each jugador in data.rojasLocal
+                                li(idJ="#{jugador.jugador}") #{jugador.nombre} #{jugador.apellido}
+                                    span.ml-2 #{jugador.minuto}'
+                div.col-xl-6
+                    h5 tarjetas amarillas
+                    ul.ta-visitante
+                        if data.continuar
+                            each jugador in data.amarillasVisit
+                                li(idJ="#{jugador.jugador}") #{jugador.nombre} #{jugador.apellido}
+                                    span.ml-2 #{jugador.minuto}'
+                    h4 tarjetas rojas
+                    ul.tr-visitante
+                        if data.continuar
+                            each jugador in data.rojasVisit
+                                li(idJ="#{jugador.jugador}") #{jugador.nombre} #{jugador.apellido}
+                                    span.ml-2 #{jugador.minuto}'
+        div.container#teams-config(class="#{(data.continuar) ? 'hide' : ''}")
+            div
+                select#tabs-conf
+                    option(value="local", selected) #{data.equipoL[0].Nombre}
+                    option(value="visitante") #{data.equipoV[0].Nombre}
+                button#configurar.float-right Configurar
+            div#local-players
+                ol.teams-players
+                    if !data.continuar
+                        each jugador in data.jugadoresL
+                            li.py-2.my-2.bg-secondary(idj="#{jugador.Id}")
+                                div.titular-option.px-3.mx-1.d-inline.btn.btn-success T
+                                div.bench-option.px-3.mx-1.d-inline.btn.btn-warning S
+                                div.px-3.mx-1.d-inline.text-white.text-uppercase.font-weight-bold #{jugador.Nombre} #{jugador.Apellido}
+                div.players-selected
+                    h2.text-center Titulares(T)
+                    ol.titulares-conf
+                    h2.text-center Suplentes(S)
+                    ol.bench-conf
+            div#visit-players.hide
+                ol.teams-players
+                    if !data.continuar
+                        each jugador in data.jugadoresV
+                            li.py-2.my-2.bg-secondary(idj="#{jugador.Id}")
+                                div.titular-option.px-3.mx-1.d-inline.btn.btn-success T
+                                div.bench-option.px-3.mx-1.d-inline.btn.btn-warning S
+                                div.px-3.mx-1.d-inline.text-white.text-uppercase.font-weight-bold #{jugador.Nombre} #{jugador.Apellido}
+                div.players-selected
+                    h2.text-center Titulares(T)
+                    ol.titulares-conf
+                    h2.text-center Suplentes(S)
+                    ol.bench-conf
+        div#game.container(class="#{(data.continuar) ? '' : 'hide'}")
+            div#timer
+                div.tiempo.d-inline.m-3
+                    div#minutos.d-inline.mx-1 #{(data.continuar) ? data.minutos : '00'}
+                    div.divisor.d-inline.mx-1 :
+                    div#segundos.d-inline.mx-1 #{(data.continuar) ? data.segundos : '00'}
+                    div#minutosR.d-inline.mx-1
+                    div.divisor.d-inline-mx-1
+                    div#segundosR.d-inline.mx-1
+                input#btn-comenzar.m-3.btn.btn-success(type="button", value="#{(data.continuar) ? 'Continuar' : 'Comenzar'}")
+            div#tabs-game.container
+                ul.nav.nav-tabs.nav-justified
+                    li.nav-item
+                        a#link-local.nav-link.active(href="#") Local
+                    li.nav-item
+                        a#link-visit.nav-link(href="#") Visitante
+            div#local-team(idE="#{data.equipoL[0].Id}")
+                h2 Titulares
+                ul.local-tit-players
+                    if data.continuar
+                        each titular in data.titularesLocal
+                            li.bg-secondary.my-2.py-2(idj="#{titular.jugador}")
+                                label.pl-2.float-left.text-uppercase.font-weight-bold(class="#{(titular.expulsado) ? 'tachado' : ''}") #{titular.nombre} #{titular.apellido}
+                                ul.player-actions.float-right(class="#{(titular.expulsado) ? 'hide' : 'd-inline'}")
+                                    li.d-inline.mx-1.btn.btn-success.btn-sm.gol G
+                                    li.d-inline.mx-1.btn.btn-dark.btn-sm.text-white.autoGol A
+                                    li.d-inline.mx-1.btn.btn-warning.btn-sm.tarjetaA TA
+                                    li.d-inline.mx-1.btn.btn-danger.btn-sm.tarjetaR TR
+                                    li.d-inline.mx-1.btn.btn-primary.btn-sm.falta F
+                h2.text-center Suplentes
+                ul.local-ben-players 
+                    if data.continuar
+                        each suplente in data.suplentesLocal
+                            li.bg-primary.my-2.py-2(idj="#{suplente.jugador}")
+                                label.pl-2.float-left.text-uppercase.text-white.font-weight-bold(class="#{(suplente.cambioSale) ? 'tachado' : ''}") #{suplente.nombre} #{suplente.apellido}
+                                if !suplente.cambioSale
+                                    div.d-inline.float-right.mx-1.btn.btn-success.cambio(data-toggle="modal" data-target="#modalCambios") C
+            div#visit-team.hide(idE="#{data.equipoV[0].Id}")
+                h2 Titulares
+                ul.visit-tit-players 
+                    if data.continuar
+                        each titular in data.titularesVisit
+                            li.bg-secondary.my-2.py-2(idj="#{titular.jugador}")
+                                label.pl-2.float-left.text-uppercase.font-weight-bold(class="#{(titular.expulsado) ? 'tachado' : ''}") #{titular.nombre} #{titular.apellido}
+                                ul.player-actions.float-right(class="#{(titular.expulsado) ? 'hide' : 'd-inline'}")
+                                    li.d-inline.mx-1.btn.btn-success.btn-sm.gol G
+                                    li.d-inline.mx-1.btn.btn-dark.btn-sm.text-white.autoGol A
+                                    li.d-inline.mx-1.btn.btn-warning.btn-sm.tarjetaA TA
+                                    li.d-inline.mx-1.btn.btn-danger.btn-sm.tarjetaR TR
+                                    li.d-inline.mx-1.btn.btn-primary.btn-sm.falta F
+                h2.text-center Suplentes
+                ul.visit-ben-players
+                    if data.continuar
+                        each suplente in data.suplentesVisit
+                            li.bg-primary.my-2.py-2(idj="#{suplente.jugador}")
+                                label.pl-2.float-left.text-uppercase.text-white.font-weight-bold(class="#{(suplente.cambioSale) ? 'tachado' : ''}") #{suplente.nombre} #{suplente.apellido}
+                                if !suplente.cambioSale
+                                    div.d-inline.float-right.mx-1.btn.btn-success.cambio(data-toggle="modal" data-target="#modalCambios") C
+                
+    //-     <div id="game" class="container">        
+            
+            
+    //-         <div id="local-team" data-tab="tb-opt-local">
+    //-             <h2>Titulares</h2>
+    //-             <ul class="local-tit-players">
+    //-                 <li>
+    //-                     <label>Niclas Alexanderson</label>
+    //-                     <ul class="player-actions hide">
+    //-                         <li>G</li>
+    //-                         <li>A</li>
+    //-                         <li>TA</li>
+    //-                         <li>TR</li>
+    //-                         <li>F</li>
+    //-                     </ul>
+    //-                 </li>
+    //-             </ul>
+    //-             <h2>Suplentes</h2>
+    //-             <ul class="local-ben-players">
+    //-                 <li>
+    //-                     <label>Niclas Alexanderson</label>
+    //-                     <div class="hide"></div>
+    //-                 </li>
+    //-             </ul>
+    //-         </div>
+    //-         <div id="visit-team" class="hide" data-tab="tb-opt-visit">
+    //-             <h2>Titulares</h2>
+    //-             <ul class="visit-tit-players">
+    //-                 <li>
+    //-                     <label>Niclas Alexanderson</label>
+    //-                     <ul class="player-actions hide">
+    //-                         <li>G</li>
+    //-                         <li>A</li>
+    //-                         <li>TA</li>
+    //-                         <li>TR</li>
+    //-                         <li>F</li>
+    //-                     </ul>
+    //-                 </li>
+    //-             </ul>
+    //-             <h2>Suplentes</h2>
+    //-             <ul class="visit-ben-players">
+    //-                 <li>
+    //-                     <label>Niclas Alexanderson</label>
+    //-                     <div class="hide"></div>
+    //-                 </li>
+    //-             </ul>
+    //-         </div>
+    //-     </div>
+    //-     <button id="terminar" class="cbutton">Terminar</button>
+    //- </div>

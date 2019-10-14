@@ -1,0 +1,33 @@
+extends ../layout
+
+block content
+    section.container
+        include ../header
+        article.item
+            -if(data.length)
+                table.table
+                    tr
+                        th Fecha
+                        th Hora
+                        th Jornada
+                        th Equipos
+                        th Temporada
+                        th Estado
+                    each partido in data
+                        tr
+                            td #{partido.Fecha}
+                            td #{partido.Hora}
+                            td #{partido.Jornada}
+                            td #{partido.ELocal} vs #{partido.EVisitante}
+                            td #{partido.Inicia} - #{partido.Finaliza}
+                            td 
+                                form(method="POST" id="formulario" action="/partidos/comenzar")
+                                    input(type="hidden", name="idPartido", value="#{partido.Id}")
+                                    input(type="hidden", name="idLocal", value="#{partido.Local}")
+                                    input(type="hidden", name="idVisitante", value="#{partido.Visitante}")
+                                    input(type="hidden", name="idTemporada", value="#{partido.Temporada}")
+                                    button#btnComenzar Comenzar
+                    
+            -else
+                div 
+                p.error No existen partidos de esta temporada en la Base de Datos

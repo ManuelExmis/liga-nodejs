@@ -1,0 +1,92 @@
+extends ../layout
+
+block content
+    section.container
+        include ../header
+        div.item 
+            form.form(method="post" id="formulario" action="/jugadores/editar")
+                fieldset
+                    div.container.p1
+                        label.item.i-b.v-top.ph3.p_25.right(for="nombre") Nombre:
+                        input.item.i-b.v-top.ph9.p_25#nombre(type="text", name="nombre", maxlength="50", value="#{data.editar[0].Nombre}", required)
+                        input#save(type="hidden", name="save", value="edit")
+                    div.container.p1
+                        label.item.i-b.v-top.ph3.p_25.right(for="apellido") Apellido:
+                        input.item.i-b.v-top.ph9.p_25#apellido(type="text", name="apellido", maxlength="50", value="#{data.editar[0].Apellido}" required)
+                    div.container.p1
+                        label.item.i-b.v-top.ph3.p_25.right(for="fNacimiento") Fecha de Nacimiento:
+                        input.item.i-b.v-top.ph9.p_25#fNacimiento(type="date", name="fNacimiento", max="#{data.fecha}", value="#{data.editar[0].FNacimiento}", required)
+                    div.container.p1
+                        label.item.i-b.v-top.ph3.p_25.right(for="sexo") Sexo:
+                        select.item.i-b.v-top.ph9.p_25#sexo(name="sexo")
+                            -if(data.editar[0].Sexo == 1){
+                                option(value="1" selected) Masculino
+                                option(value="0") Femenino
+                            -}
+                            -else{
+                                option(value="1") Masculino
+                                option(value="0" selected) Femenino
+                            -}
+                    div.container.p1
+                        label.item.i-b.v-top.ph3.p_25.right(for="nombreFut") Nombre Futbolistico:
+                        input.item.i-b.v-top.ph9.p_25#nombreFut(type="text", name="nombreFut", maxlength="25", value="#{data.editar[0].NombreFut}")
+                    div.container.p1
+                        label.item.i-b.v-top.ph3.p_25.right(for="equipo") Equipo:
+                        select.item.i-b.v-top.ph9.p_25#equipo(name="equipo")
+                            each equipo in data.equipos
+                                -if(data.editar[0].IdEquipo == equipo.Id){
+                                    option(value="#{equipo.Id}" selected) #{equipo.Nombre}
+                                -}else{
+                                    option(value="#{equipo.Id}") #{equipo.Nombre}
+                                -}
+                    div.container.p1
+                        label.item.i-b.v-top.ph3.p_25.right(for="temporada") Temporada:
+                        select.item.i-b.v-top.ph9.p_25#temporada(name="temporada")
+                            each temporada in data.temporadas
+                                -if(temporada.Id == data.editar[0].IdTemporada){
+                                    option(value="#{temporada.Id}" selected) #{temporada.Inicia} - #{temporada.Finaliza}
+                                -}else{
+                                    option(value="#{temporada.Id}") #{temporada.Inicia} - #{temporada.Finaliza}
+                                -}
+                    div.container.p1
+                        label.item.i-b.v-top.ph3.p_25.right(for="tiempo") Tiempo del contrato:
+                        input.item.i-b.v-top.ph9.p_25#tiempo(type="number", name="tiempo", value="#{data.editar[0].Tiempo}", min="1", max="10", required)
+                    div.container.p1
+                        input(type="hidden", name="id", value="#{data.editar[0].Id}")
+                        input(type="hidden", name="idOldEquipo", value="#{data.editar[0].IdEquipo}")
+                        input(type="hidden", name="idOldTemporada", value="#{data.editar[0].IdTemporada}")
+                        button.item.ph4.mauto.button.add() Actualizar
+                        input(type="hidden", name="_method", value="PUT")
+        <script src="/js/jquery-1.10.2.min.js"></script>
+        script.
+            //- function validar(input){debugger
+            //-     let nombre = document.getElementById('nombre'),
+            //-         iniciales = document.getElementById('iniciales'),
+            //-         lugar = document.getElementById('lugar'),
+            //-         logo = document.getElementById('logo')
+
+            //-     if(!nombre.validity.valid){
+            //-         nombre.focus()
+            //-     }
+            //-     else if(!iniciales.validity.valid){
+            //-         iniciales.focus()
+            //-     }
+            //-     else if(!lugar.validity.valid){
+            //-         lugar.focus()
+            //-     }
+            //-     else if(!logo.validity.valid){
+            //-         logo.focus()
+            //-     }
+            //-     else{
+            //-         nombre.setCustomValidity("Este nombre ya existe!")
+            //-         $.post('/equipos/validar', { nombre : nombre.value }, function(data){
+            //-             if(data.ok){
+            //-                 nombre.setCustomValidity("")
+            //-                 document.getElementById('formulario').submit()
+            //-             }
+            //-             else{
+            //-                 nombre.focus()
+            //-             }
+            //-         })
+            //-     }
+            //- }

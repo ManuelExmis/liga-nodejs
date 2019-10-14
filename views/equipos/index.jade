@@ -1,0 +1,59 @@
+extends ../layout
+
+block content
+    section.container
+        include ../header
+        article.item
+            -if(data.length)
+                table.table
+                    tr
+                        th Nombre
+                        th Iniciales
+                        th Lugar
+                        th Logo
+                        th(colspan="2")
+                            form(method="get" action="/equipos/agregar")
+                                input.button.add(type="submit", value="Agregar")
+                    each equipo in data
+                        tr
+                            td #{equipo.Nombre}
+                            td #{equipo.Iniciales}
+                            td #{equipo.Lugar}
+                            td
+                                img.poster(src="#{equipo.Logo}", alt="#{equipo.Nombre}")
+                            td 
+                                form(method="POST" action="/equipos/editar")
+                                    input(type="hidden", name="id", value="#{equipo.Id}")
+                                    input.button.edit(type="submit", value="Editar")
+                            td 
+                                form(method="POST" action="/equipos/eliminar")
+                                    input.button.delete(type="button", id="#{equipo.Id}" value="Eliminar" onclick="eliminar(this)")
+                                    input(type="hidden", name="id", value="#{equipo.Id}")
+                                    input(type="hidden", name="_method", value="DELETE")
+                <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.2.4/jquery.min.js"></script>
+                script.
+                    function eliminar(input){
+                        var deleteOk = confirm('¿Estás seguro de eliminar la película?'),
+                            id = $(input).attr('id')
+                            $(input).attr('disabled', true)
+                            console.log(id)
+                        //- return (deleteOk) ? input.parentNode.submit() : false
+                        if(deleteOk)
+                        {
+                            $.post('/equipos/puedoEliminar', { id : id}, function(data){
+                                if(data.ok){
+                                    input.parentNode.submit()
+                                }
+                                else{
+                                    alert('No se puede eliminar el equipo porque tiene registros vinculados')
+                                }
+                                $(input).attr('disabled', false)
+                            })
+                        }
+                        $(input).attr('disabled', false)
+                    }
+            -else
+                div 
+                    form(method="get" action="/equipos/agregar")
+                        input.button.add(type="submit", value="Agregar")
+                p.error No existen Equipos en la Base de Datos

@@ -1,0 +1,59 @@
+extends ../layout
+
+block content
+    section.container
+        include ../header
+        div.item 
+            form.form(method="post" id="formulario" action="/equipos/agregar")
+                fieldset
+                    div.container.p1
+                        label.item.i-b.v-top.ph3.p_25.right(for="nombre") Nombre:
+                        input.item.i-b.v-top.ph9.p_25#nombre(type="text", name="nombre", maxlength="50", onkeyup="quitMessage(this)" required)
+                        input#save(type="hidden", name="save", value="new")
+                    div.container.p1
+                        label.item.i-b.v-top.ph3.p_25.right(for="iniciales") Iniciales:
+                        input.item.i-b.v-top.ph9.p_25#iniciales(type="text", name="iniciales", maxlength="3" required)
+                    div.container.p1
+                        label.item.i-b.v-top.ph3.p_25.right(for="lugar") Lugar:
+                        input.item.i-b.v-top.ph9.p_25#lugar(type="text", name="lugar", required)
+                    div.container.p1
+                        label.item.i-b.v-top.ph3.p_25.right(for="logo") Logo:
+                        input.item.i-b.v-top.ph9.p_25#logo(type="text", name="logo")
+                    div.container.p1
+                        button.item.ph4.mauto.button.add(onclick="validar(this)") Agregar
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.2.4/jquery.min.js"></script>
+        script.
+            function quitMessage(input){
+                document.getElementById('nombre').setCustomValidity("")
+            }
+            function validar(input){debugger
+                let nombre = document.getElementById('nombre'),
+                    iniciales = document.getElementById('iniciales'),
+                    lugar = document.getElementById('lugar'),
+                    logo = document.getElementById('logo')
+
+                if(!nombre.validity.valid){
+                    nombre.focus()
+                }
+                else if(!iniciales.validity.valid){
+                    iniciales.focus()
+                }
+                else if(!lugar.validity.valid){
+                    lugar.focus()
+                }
+                else if(!logo.validity.valid){
+                    logo.focus()
+                }
+                else{
+                    nombre.setCustomValidity("Este nombre ya existe!")
+                    $.post('/equipos/validar', { nombre : nombre.value }, function(data){
+                        if(data.ok){
+                            nombre.setCustomValidity("")
+                            document.getElementById('formulario').submit()
+                        }
+                        else{
+                            nombre.focus()
+                        }
+                    })
+                }
+            }

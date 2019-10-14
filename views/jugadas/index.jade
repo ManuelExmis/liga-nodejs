@@ -1,0 +1,54 @@
+extends ../layout
+
+block content
+    section.container
+        include ../header
+        article.item
+            -if(data.length)
+                table.table
+                    tr
+                        th Jugada
+                        th Descripción
+                        th(colspan="2")
+                            form(method="get" action="/jugadas/agregar")
+                                input.button.add(type="submit", value="Agregar")
+                    each jugada in data
+                        tr
+                            td.center #{jugada.Jugada}
+                            td.center #{jugada.Descripcion}
+                            td.center 
+                                form(method="POST" action="/jugadas/editar")
+                                    input(type="hidden", name="id", value="#{jugada.Id}")
+                                    input.button.edit(type="submit", value="Editar")
+                            td.center 
+                                form(method="POST" action="/jugadas/eliminar")
+                                    input.button.delete(type="button", id="#{jugada.Id}" value="Eliminar" onclick="eliminar(this)")
+                                    input(type="hidden", name="id", value="#{jugada.Id}")
+                                    input(type="hidden", name="_method", value="DELETE")
+                <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.2.4/jquery.min.js"></script>
+                script.
+                    function eliminar(input){
+                        var deleteOk = confirm('¿Estás seguro de eliminar la jugada?'),
+                            id = $(input).attr('id')
+                            $(input).attr('disabled', true)
+                            console.log(id)
+                        //- return (deleteOk) ? input.parentNode.submit() : false
+                        if(deleteOk)
+                        {
+                            $.post('/jugadas/puedoEliminar', { id : id}, function(data){
+                                if(data.ok){
+                                    input.parentNode.submit()
+                                }
+                                else{
+                                    alert('No se puede eliminar la jugada porque tiene registros vinculados')
+                                }
+                                $(input).attr('disabled', false)
+                            })
+                        }
+                        $(input).attr('disabled', false)
+                    }
+            -else
+                div 
+                    form(method="get" action="/jugadas/agregar")
+                        input.button.add(type="submit", value="Agregar")
+                p.error No existen Temporadas en la Base de Datos
