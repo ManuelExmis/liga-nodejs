@@ -17,9 +17,9 @@
   "author": "@lmanuelex",
   "license": "MIT",
   "dependencies": {
-    "body-parser": "^1.18.3",
+    "body-parser": "^1.20.1",
     "bootstrap": "^4.3.1",
-    "express": "^4.16.4",
+    "express": "^4.18.2",
     "express-method-override": "0.0.3",
     "jade": "^1.11.0",
     "jquery": "^3.4.1",
